@@ -100,7 +100,7 @@
                <Insets />
             </GridPane.margin>
          </Button>
-         <Button fx:id="switchButton" mnemonicParsing="false" onAction="#switchTerminal" text="Button" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <Button fx:id="switchButton" mnemonicParsing="false" onAction="#goodSwitchTerminal" text="Button" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <GridPane.margin>
                <Insets />
             </GridPane.margin>

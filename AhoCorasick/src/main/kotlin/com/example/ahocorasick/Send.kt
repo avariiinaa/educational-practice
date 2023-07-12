@@ -65,8 +65,8 @@ class Bor {
             // еще нет ребенка с таким символом
             if (sym !in this) {
                 // проверка на наличие дочернего массива
-                if (children == null) children =
-                    mutableListOf()
+                if (children == null)
+                    children = mutableListOf()
                 // создание новой Node и добавление его в массив
                 val newNode = Node(father = this, pchar = sym)
                 children!!.add(Pair(newNode, sym))
@@ -144,7 +144,6 @@ class Bor {
         string.forEachIndexed { index, c ->
             if (c !in currentNode) {
                 currentNode.addChildren(c)
-                //println(c)
             }
             currentNode = currentNode.getNode(c)!!
         }
@@ -158,8 +157,6 @@ class Bor {
      */
     fun go(node: Node, char: Char): Node {
         if (!node.go.contains(char)) {
-            //println("$node $char")
-            // есть переход по ребру бор
             if (node.getNode(char) != null) {
                 node.go[char] = node.getNode(char)!!
             } else if (node == root) { // перехода по ребру бора нет, находимся в корне
@@ -197,6 +194,8 @@ class Bor {
             while (tmpNode != root) {
                 tmpNode = sufflinkOf(tmpNode)
             }
+
+
             node.allSubPatterns().forEach {
                 val value = it.getWordLen()
                 result.add(
@@ -211,17 +210,11 @@ class Bor {
         var result = node.toString()
         node.getChildren()?.forEach {
             result += "\n"
-            result += toString(
-                it.first,
-                tab + 1
-            ).prependIndent("\t".repeat(tab))
+            result += toString(it.first, tab + 1).prependIndent("\t".repeat(tab))
         }
         return result
     }
 }
-
-
-
 
 
 class Send {
@@ -238,6 +231,7 @@ class Send {
 
     @FXML
     private lateinit var terminalInput: TextField
+
     @FXML
     private lateinit var textField: TextField
 
@@ -264,6 +258,7 @@ class Send {
 
     @FXML
     private lateinit var backButton: Button
+
     @FXML
     private lateinit var switchTextButton: Button
 
@@ -274,7 +269,6 @@ class Send {
     private lateinit var fsmImg: ImageView
 
     private lateinit var bor: Bor
-
 
 
     @FXML
@@ -301,14 +295,8 @@ class Send {
             patternsText.isVisible = true
             answerText.isVisible = true
             activateAlg()
-
-
-        } else if (txt.getText().isEmpty()) {
-            wrong.text = "there is no text"
-        } else if (patterns.getText().isEmpty()) {
-            wrong.text = "there is no patterns"
-        }
-
+        } else if (txt.getText().isEmpty()) wrong.text = "there is no text"
+        else if (patterns.getText().isEmpty()) wrong.text = "there is no patterns"
     }
 
     @FXML
@@ -316,18 +304,25 @@ class Send {
 
         textField.text = txt.text
         patternsText.text = "Patterns: ${patterns.text}"
+        rebuildBor()
+        answerText.text = "Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
+
+    }
+
+    private fun rebuildBor() {
         bor = Bor()
         for (word in patterns.text.split('#')) {
             bor.insert(word)
         }
-        answerText.text = "Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
-
     }
+
     @FXML
-    private fun switchText(){
-        answerText.text = "Answer \n${bor.getIndexesOf(textField.getText()).joinToString("\n") { "${it.second} ${it.first}" }}"
+    private fun switchText() {
+        answerText.text =
+            "Answer \n${bor.getIndexesOf(textField.getText()).joinToString("\n") { "${it.second} ${it.first}" }}"
 
     }
+
     //@FXML
     //private fun delNode(){
     //    val oldNodeText = nodeInput.getText()
@@ -345,67 +340,54 @@ class Send {
     //}
     @FXML
     private fun addNode() {
-        //val newNodeText = nodeInput.getText().toString().split("->")
-        //val fullNewNode:String = newNodeText[0]+newNodeText[1]
-        //if (fullNewNode !in patternsText.text){
-        //    bor.insert(fullNewNode)
-        //    patternsText.text+="#$fullNewNode"
-        //    answerText.text="Answer!! \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${ it.second } ${ it.first }" }}"
-        //    print("Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${ it.second } ${ it.first }" }}"
-        //    )
-        //}
         val newNodeText = nodeInput.getText().toString().split("->")
         val fullNewNode: String = newNodeText[0] + newNodeText[1]
         if (fullNewNode !in patternsText.text) {
             patternsText.text += "#$fullNewNode"
-            //patterns.text+="#$fullNewNode"
-            bor = Bor()
-            for (word in patterns.text.split('#')) {bor.insert(word)}
+            rebuildBor()
+            //вывод картинки
             patterns.text += "#$fullNewNode"
             bor.insert(fullNewNode)
-            answerText.text =
-                "Answer!! \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
-        }
-    }
-    /**
-    *
-     * Переделать, сделать затухание а не удаление */
-    @FXML
-    private fun switchTerminal() {
-        if ("#${terminalInput.text}#" in "#${patterns.text}#"){
-            var tmpText= "#${patterns.text}#".replace("#${terminalInput.text}#", "#").replace("##","#")
-            if (tmpText.first() == '#'){tmpText = tmpText.substring(1)}
-            if (tmpText.last() == '#'){tmpText = tmpText.substring(0,tmpText.length-1)}
-            patterns.text = tmpText
-            patternsText.text = "Patterns: ${patterns.text}"
-            bor = Bor()
-            for (word in patterns.text.split('#')) {bor.insert(word)}
-            answerText.text =
-                "Answer!! \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
-
-        }
-        else if ("#${terminalInput.text}" in "#${patterns.text}"){
-            patternsText.text += "#${terminalInput.text}"
-            patterns.text += "#${terminalInput.text}"
-            bor = Bor()
-            for (word in patterns.text.split('#')) {bor.insert(word)}
-
-            patterns.text += "#${terminalInput.text}"
-            bor.insert(terminalInput.text)
+            //вывод картинки
             answerText.text =
                 "Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
         }
-        //println(bor.toString(tab = 0))
-        //var state= bor.root
-        //for (i in terminalInput.text){
-        //    state= bor.go(state,i)
-        //    println("$state oooooooooooooooooooo")
-        //
-//
-        //}
-        //println(bor.toString(tab = 0))
-        //answerText.text="Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${ it.second } ${ it.first }" }}"
-        //println("Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${ it.second } ${ it.first }" }}")
+    }
+
+    private fun deletePattern(str: String) {
+        var tmpText = "#${patterns.text}#".replace("#${str}#", "#").replace("##", "#")
+        if (tmpText.first() == '#') {
+            tmpText = tmpText.substring(1)
+        }
+        if (tmpText.last() == '#') {
+            tmpText = tmpText.substring(0, tmpText.length - 1)
+        }
+        patterns.text = tmpText
+        patternsText.text = "Patterns: ${patterns.text}"
+    }
+
+    @FXML
+    private fun goodSwitchTerminal() {
+        var tmpNode = bor.root
+        for (i in terminalInput.text) tmpNode = bor.go(tmpNode, i)
+        tmpNode.terminal = !tmpNode.terminal
+        if (tmpNode.terminal) {
+            tmpNode.subPatterns.add(tmpNode)
+            tmpNode.number = ++bor.totalString
+
+            //tmpNode.number=patterns.text.count{it == '#' }+2
+            //bor.totalString++
+
+            patterns.text += "#${terminalInput.text}"
+            patternsText.text = "Patterns: ${patterns.text}"
+        } else {
+            tmpNode.subPatterns.remove(tmpNode)
+            tmpNode.number = null
+            --bor.totalString
+            deletePattern(terminalInput.text)
+        }
+        answerText.text =
+            "Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
     }
 
     @FXML
@@ -424,7 +406,6 @@ class Send {
         backButton.isVisible = false
         textField.isVisible = false
         switchTextButton.isVisible = false
-
         textText.isVisible = false
         patternsText.isVisible = false
         answerText.isVisible = false
