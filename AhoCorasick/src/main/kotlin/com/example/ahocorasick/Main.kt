@@ -23,12 +23,6 @@ class HelloApplication : Application() {
         stage1?.show()
 
     }
-    fun changeScene(fxml: String) {
-        val fxmlLoader = FXMLLoader(HelloApplication::class.java.getResource(fxml))
-        //stage?.scene = Scene(fxmlLoader.load(), 800.0, 800.0)
-        stage?.scene?.root = fxmlLoader.load()
-        stage?.show()
-    }
 }
 
 fun main() {
