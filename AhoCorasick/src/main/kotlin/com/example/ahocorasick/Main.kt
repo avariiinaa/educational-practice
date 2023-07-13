@@ -1,13 +1,9 @@
 package com.example.ahocorasick
 
 import javafx.application.Application
-import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
-import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.stage.Stage
-import javafx.stage.Window
-import java.io.IOException
 
 
 class HelloApplication : Application() {

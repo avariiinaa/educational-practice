@@ -73,22 +73,23 @@
    </GridPane>
    <GridPane prefHeight="280.0" prefWidth="377.0">
      <columnConstraints>
-       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+       <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.0" minWidth="10.0" prefWidth="220.0" />
+       <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.0" minWidth="10.0" prefWidth="220.0" />
+         <ColumnConstraints hgrow="SOMETIMES" maxWidth="178.0" minWidth="10.0" prefWidth="115.0" />
      </columnConstraints>
      <rowConstraints>
-       <RowConstraints maxHeight="191.0" minHeight="10.0" prefHeight="191.0" vgrow="SOMETIMES" />
-         <RowConstraints maxHeight="77.0" minHeight="0.0" prefHeight="37.0" vgrow="SOMETIMES" />
+       <RowConstraints maxHeight="191.0" minHeight="10.0" prefHeight="190.0" vgrow="SOMETIMES" />
+         <RowConstraints maxHeight="77.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
        <RowConstraints maxHeight="97.0" minHeight="10.0" prefHeight="29.0" vgrow="SOMETIMES" />
      </rowConstraints>
       <children>
          <ImageView fx:id="trieImg" fitHeight="192.0" fitWidth="277.0" pickOnBounds="true" preserveRatio="true" visible="false">
             <image>
-               <Image url="@trie.png" />
+               <Image url="@fsm.png" />
             </image></ImageView>
          <ImageView fx:id="fsmImg" fitHeight="189.0" fitWidth="275.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.columnIndex="1">
             <image>
-               <Image url="@fsm.png" />
+               <Image url="@trie.png" />
             </image></ImageView>
          <TextField fx:id="nodeInput" promptText="add new node" visible="false" GridPane.rowIndex="1" />
          <TextField fx:id="terminalInput" prefHeight="25.0" prefWidth="133.0" promptText="switch terminal of" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -105,6 +106,8 @@
                <Insets />
             </GridPane.margin>
          </Button>
+         <TextField fx:id="delInput" prefHeight="25.0" prefWidth="133.0" promptText="switch terminal of" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+         <Button fx:id="delButton" mnemonicParsing="false" onAction="#delNode" text="Button" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
       </children>
    </GridPane>
    <Button fx:id="backButton" mnemonicParsing="false" onAction="#back" text="back" visible="false" />
