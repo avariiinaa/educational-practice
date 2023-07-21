@@ -1,4 +1,4 @@
-package com.example.ahocorasick
+package com.example.aho
 
 import javafx.application.Application
 import javafx.fxml.FXMLLoader

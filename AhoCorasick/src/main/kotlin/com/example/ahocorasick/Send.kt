@@ -1,4 +1,4 @@
-package com.example.ahocorasick
+package com.example.aho
 
 import guru.nidi.graphviz.attribute.Color
 import guru.nidi.graphviz.attribute.Label
@@ -9,7 +9,6 @@ import guru.nidi.graphviz.model.MutableNode
 import javafx.fxml.FXML
 import javafx.scene.control.Button
 import javafx.scene.control.TextField
-import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.text.Text
 import java.io.File
@@ -308,9 +307,6 @@ class Send {
         else if (patterns.getText().isEmpty()) wrong.text = "there is no patterns"
     }
 
-    class State(val name: String, val transitions: MutableMap<Char, State> = mutableMapOf())
-
-
     class AutomatonNode(val state: String, val transition: Char) {
         val children: MutableMap<Char, AutomatonNode> = mutableMapOf()
         var suffixLink: AutomatonNode? = null
@@ -465,7 +461,7 @@ class Send {
         return root
     }
 
-    private fun saveAutomatonAsPNG(automaton: AutomatonNode, filename: String) {
+    private fun saveAutomatonAsPNG(automaton: AutomatonNode, filename: String, path: String = "src/main/resources/com/example/aho") {
         val graph = Factory.mutGraph().setDirected(true)
         val nodes = mutableMapOf<AutomatonNode, MutableNode>()
 
@@ -481,28 +477,53 @@ class Send {
                 mutableNode.addLink(link)
             }
 
-            if (node.outputLink != null) {
-                val outputLinkNode = nodes[node.outputLink!!]!!
-                val outputLinkLink = Factory.to(outputLinkNode).with(Label.of("")).add(Color.BLUE)
-                mutableNode.addLink(outputLinkLink)
+            node.outputLink?.let { outputLink ->
+                nodes[outputLink]?.let { outputLinkNode ->
+                    val outputLinkLink = Factory.to(outputLinkNode).with(Label.of("")).add(Color.BLUE)
+                    mutableNode.addLink(outputLinkLink)
+                }
             }
 
-            if (node.suffixLink != null) {
-                val suffixLinkNode = nodes[node.suffixLink!!]!!
-                val suffixLinkLink = Factory.to(suffixLinkNode).with(Label.of("")).add(Color.GREEN)
-                mutableNode.addLink(suffixLinkLink)
+            node.suffixLink?.let { suffixLink ->
+                nodes[suffixLink]?.let { suffixLinkNode ->
+                    val suffixLinkLink = Factory.to(suffixLinkNode).with(Label.of("")).add(Color.GREEN)
+                    mutableNode.addLink(suffixLinkLink)
+                }
             }
         }
 
         buildGraph(automaton)
 
         val dot = Graphviz.fromGraph(graph).render(Format.DOT).toString()
-        val relativePath1 = "src/main/resources/com/example/ahocorasick" // Относительный путь от текущей директории
-
-        val path = File(System.getProperty("user.dir"), relativePath1).absolutePath
         val file = File(path, filename)
         val renderedGraph = Graphviz.fromString(dot).render(Format.PNG).toFile(file)
-        println("Автомат сохранен в файл: $filename")
+        println("Автомат сохранен в файл: ${file.absolutePath}")
+    }
+
+    @FXML
+    private fun activatePng(){
+        textText.text = "Text: "
+        patternsText.text = "Patterns: ${patterns.text}"
+        val patterns = "${patterns.text}"
+        val automaton1 = buildAutomat(patterns.split("#"))
+        saveAutomatonAsPNG(automaton1, "fsm.png")
+        val patterns1 = patterns.split("#")
+        val automaton2 = buildAutomaton(patterns1)
+        markTrueNodes(automaton2)
+        val filename1 = "trie.png"
+        val path1 = "src/main/resources/com/example/aho"
+        val path = if (path1.isNotBlank()) path1 else "src/main/resources/com/example/aho" // Если путь не указан, сохранить файл в текущей директории
+
+        saveTreAsPNG(automaton2, filename1, path1)
+
+        val relativePath2 = "src/main/resources/com/example/aho" // Относительный путь от текущей директории
+
+        val path2 = File(System.getProperty("user.dir"), relativePath2).absolutePath
+        val newImage = ImageView("$path2/fsm.png")
+        val newImage2 = ImageView("$path2/trie.png")
+        trieImg.image = newImage.image
+        fsmImg.image = newImage2.image
+
     }
 
     @FXML
@@ -513,9 +534,9 @@ class Send {
         patternsText.text = "Patterns: ${patterns.text}"
         rebuildBor()
         answerText.text = "Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
-        makePic()
+        activatePng()
     }
-//
+    //
     private fun rebuildBor() {
         bor = Bor()
         for (word in patterns.text.split('#')) {
@@ -548,6 +569,7 @@ class Send {
         val oldNode = delInput.text
         var pts = patterns.text.split("#").toMutableList()
         var i = 0
+
         while (i != pts.size) {
             if (oldNode in pts[i]) {
                 println(i)
@@ -561,22 +583,10 @@ class Send {
         rebuildBor()
         answerText.text =
             "Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
-        makePic()
+        activatePng()
     }
-    fun makePic(){
-        val patterns = "${patterns.text}"
-        val automaton1 = buildAutomat(patterns.split("#"))
-        saveAutomatonAsPNG(automaton1, "fsm.png")
-        val patterns1 = patterns.split("#")
-        val automaton2 = buildAutomaton(patterns1)
-        markTrueNodes(automaton2)
-        val filename1 = "trie.png"
-        val relativePath1 = "src/main/resources/com/example/ahocorasick" // Относительный путь от текущей директории
 
-        val path1 = File(System.getProperty("user.dir"), relativePath1).absolutePath
 
-        saveTreAsPNG(automaton2, filename1, path1)
-    }
     @FXML
     private fun addNode() {
         val newNodeText = nodeInput.getText().toString().split("->")
@@ -591,13 +601,13 @@ class Send {
             answerText.text =
                 "Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
         }
-        makePic()
+        activatePng()
     }
 
 
     @FXML
     private fun goodSwitchTerminal() {
-        rebuildBor()
+        //rebuildBor()
         var tmpNode = bor.root
         for (i in terminalInput.text) tmpNode = bor.go(tmpNode, i)
         tmpNode.terminal = !tmpNode.terminal
@@ -618,7 +628,7 @@ class Send {
         }
         answerText.text =
             "Answer \n${bor.getIndexesOf(txt.text).joinToString("\n") { "${it.second} ${it.first}" }}"
-        makePic()
+        activatePng()
     }
 
     @FXML
